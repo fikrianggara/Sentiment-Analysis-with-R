@@ -1,0 +1,98 @@
+---
+title: "analisis sentimen"
+author: "Fikri Septrian Anggara"
+date: "7/2/2021"
+output: html_document
+---
+
+```{r}
+library(readr)
+analisis_sentimen <- read_csv("D:/Document/Politeknik Statistika STIS/materi kuliah/course/hackerrank/R/analisis sentimen.txt")
+View(analisis_sentimen)
+```
+
+```{r warning=FALSE}
+analisis_sentimen<-as.data.frame(analisis_sentimen)
+analisis_sentimen$tweet_sentiment<-as.factor(analisis_sentimen$tweet_sentiment)
+```
+```{r}
+# fungsi ngebersihin kalimat
+clean_word<-function(data){
+  data<-gsub("`|\\.|\\?|!|;|\\(|\\)|,|/|'","",data)
+    data<-tolower(data)
+    return(data)
+}
+#fungsi analisis sentimen
+tweets_sentiment<-function(data){
+  sent_table<-data.frame(matrix(ncol = 4, nrow = 0))
+  colnames(sent_table)<-c("word", "negative", "neutral", "positive")
+  for(i in 1:nrow(data)){
+  
+    # menghilangkan tanda baca, mengubah ke huruf kecil dan memecah menjadi vektor kata, menghilangkan leading dan trailing white space
+    data[i,2]<-clean_word(data[i,2])
+    temp<-strsplit(data[i,2]," ")[[1]]
+    
+    # loop untuk insert ke tabel sentimen
+    for(j in 1:length(temp)){
+      
+      # pengecekan apakah panjang karakter antara 6 dan 9
+      if(nchar(temp[j])<=5 | nchar(temp[j])>=10){
+        
+        next
+        
+      } else{
+        
+        # jika belum ada data di sent_tabel, insert langsung
+        if(nrow(sent_table)==0){
+          
+          # pengecekan sentimen
+          if(data[i,3]=="negative"){
+            
+            sent_table[nrow(sent_table)+1, ]<-c(temp[j],1,0,0)
+            
+          } else if(data[i,3]=="neutral"){
+            
+            sent_table[nrow(sent_table)+1, ]<-c(temp[j],0,1,0)
+            
+          } else{
+            
+            sent_table[nrow(sent_table)+1, ]<-c(temp[j],0,0,1)
+            
+          }
+          # kalo sudah ada data di sent_table, cek lagi apakah data temp[j], sudah ada, kalo udah ada di skip
+        } else{
+          for(k in 1:nrow(sent_table)){
+            # kalo sudah ada di sent_table, lanjut ke temp berikutnya
+            if(sent_table$word==temp[j]){
+              break
+            } else{
+              # pengecekan sentimen
+              if(data[i,3]=="negative"){
+            
+                sent_table[nrow(sent_table)+1, ]<-c(temp[j],1,0,0)
+                break
+            
+              } else if(data[i,3]=="neutral"){
+            
+                sent_table[nrow(sent_table)+1, ]<-c(temp[j],0,1,0)
+                break
+            
+              } else{
+            
+                sent_table[nrow(sent_table)+1, ]<-c(temp[j],0,0,1)
+                break
+            
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return(sent_table)
+}
+
+tweets_sentiment(analisis_sentimen)
+
+```
+
