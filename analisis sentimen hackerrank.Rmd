@@ -5,17 +5,18 @@ date: "7/2/2021"
 output: html_document
 ---
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(readr)
+library(DT)
 analisis_sentimen <- read_csv("D:/Document/Politeknik Statistika STIS/materi kuliah/course/hackerrank/R/analisis sentimen.txt")
 View(analisis_sentimen)
 ```
 
-```{r warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 analisis_sentimen<-as.data.frame(analisis_sentimen)
 analisis_sentimen$tweet_sentiment<-as.factor(analisis_sentimen$tweet_sentiment)
 ```
-```{r}
+```{r message=FALSE, warning=FALSE}
 # fungsi ngebersihin kalimat
 clean_word<-function(data){
   data<-gsub("`|\\.|\\?|!|;|\\(|\\)|,|/|'","",data)
@@ -92,7 +93,7 @@ tweets_sentiment<-function(data){
   return(sent_table)
 }
 
-tweets_sentiment(analisis_sentimen)
+datatable(tweets_sentiment(analisis_sentimen)) 
 
 ```
 
